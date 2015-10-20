@@ -9,7 +9,7 @@ e: number of training epochs
 Rick Wolf
 """
 
-import sys, math
+import sys, math, random
 from Dataset import Dataset
 
 
@@ -72,14 +72,30 @@ def main(argv):
 
 
 	# read in dataset
-	trainset = readFile(trainFile)
+	dset = readFile(trainFile)
 
 	# split the dataset into stratified folds
-	trainPos = [inst for inst in trainset.instances if inst[-1] == trainset.labels[1]]
-	trainNeg = [inst for inst in trainset.instances if inst[-1] == trainset.labels[0]]
+	allPos = [inst for inst in dset.instances if inst[-1] == dset.labels[1]]
+	allNeg = [inst for inst in dset.instances if inst[-1] == dset.labels[0]]
+	numPosPerSet = len(allPos)/n
+	numNegPerSet = len(allNeg)/n
 
-	print len(trainPos)
-	print len(trainNeg)
+	# make each separate fold
+	folds = []
+	for i in range(n):	
+		tmp = []
+		# add positive values
+		for j in range(numPosPerSet):
+			ind = random.randint(0,len(allPos)-1)
+			tmp.append(allPos.pop(ind))
+		
+		# add negative values
+		for j in range(numNegPerSet):
+			ind = random.randint(0,len(allNeg)-1)
+			tmp.append(allNeg.pop(ind))
+
+		folds.append(tmp)
+
 
 
 
