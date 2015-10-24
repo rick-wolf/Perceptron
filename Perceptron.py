@@ -61,10 +61,10 @@ class Perceptron(object):
 				# node loop
 				for x in range(len(self.featureList)):
 					#apply perceptron learning rule
-					delta = self.learningRate * (targetClass-output)*instance[x]
+					delta = -self.learningRate * (-1*(targetClass-output)*output*(1-output)*instance[x])
 					self.outputNode.changeWeight(x, delta)
 				# update the bias node
-				delta = self.learningRate * (targetClass-output)*instance[-1]
+				delta = -self.learningRate * (-1*(targetClass-output)*output*(1-output)*instance[-1])
 				self.outputNode.changeWeight(-1,delta)
 
 
