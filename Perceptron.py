@@ -1,5 +1,5 @@
 
-import math,
+import math
 from Dataset import Dataset
 from Node import Node
 
@@ -29,7 +29,9 @@ class Perceptron(object):
 		# initialize output node
 		self.outputNode = Node(2)
 		for i in self.inputNodes:
-			self.outputNode.addParent(self.weightDefault,i)
+			self.outputNode.addParent((self.weightDefault,i))
+
+		self.train()
 
 
 
@@ -51,7 +53,7 @@ class Perceptron(object):
 		"""
 
 		# epoch loop
-		for i in range(len(self.maxEpoch)):
+		for i in range(self.maxEpoch):
 
 			# instance loop
 			for instance in self.trainingSet:
@@ -64,7 +66,7 @@ class Perceptron(object):
 					delta = -self.learningRate * (-1*(targetClass-output)*output*(1-output)*instance[x])
 					self.outputNode.changeWeight(x, delta)
 				# update the bias node
-				delta = -self.learningRate * (-1*(targetClass-output)*output*(1-output)*instance[-1])
+				delta = -self.learningRate * (-1*(targetClass-output)*output*(1-output)*1)
 				self.outputNode.changeWeight(-1,delta)
 
 

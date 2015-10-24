@@ -27,7 +27,8 @@ class Node(object):
 			self.parentList.append(nodeWeightPair)
 
 	def changeWeight(self, ind, delta):
-		self.parentList[i][0] += delta
+		newWeight = self.parentList[ind][0] + delta
+		self.parentList[ind] = (newWeight, self.parentList[ind][1])
 
 
 	def getOutput(self):
@@ -42,7 +43,7 @@ class Node(object):
 			# get linear combination of inputs
 			z = 0
 			for parent in self.parentList:
-				z += parent[0] * parent[1].getOutput
+				z += parent[0] * parent[1].getOutput()
 			return 1/(1+math.exp(-z))
 
 

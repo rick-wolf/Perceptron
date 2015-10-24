@@ -87,7 +87,7 @@ def main(argv):
 	numPosPerSet = int(round(float(len(allPos))/n))
 	numNegPerSet = int(round(float(len(allNeg))/n))
 	
-	
+
 	# a better way of assigning folds
 	foldAssignList = [0 for i in range(len(dset.instances))]
 	currentFold = 1
@@ -119,28 +119,60 @@ def main(argv):
 		folds.append([dset.instances[j] for j in range(len(dset.instances)) if foldAssignList[j]-1 == i])
 
 
-	netList = []
-	for j in range(len(folds)):
-		testFold = j
-		trainSet = []
-		for i in range(len(folds)):
-			if i != testFold:
-				trainSet.extend(folds[i])
-
-		nnet = Perceptron(trainSet, dset.attributes, dset.labels, l, e, .1)
-		netList.append(nnet)
-
 	
-	# classify all of the instances
-	for i in range(len(dset.instances)):
-		fold = foldAssignList[i]
-		nnet = netList[fold-1]
-		out = nnet.calculateOutput(dset.instances[i])
-		ind = 1 if out > .5 else 0
-		classOut = dset.labels[ind]
-		actual = dset.instances[i][-1]
-		print("fold: " + str(fold) + ", predicted: " + classOut + ", actual: " + actual + ", confidence: " + str(out))
+	# for fold in folds:
+	# 	posCount = 0
+	# 	negCount = 0
+	# 	for inst in fold:
+	# 		if inst[-1]=="Mine": 
+	# 			posCount+=1
+	# 		else:
+	# 			negCount+=1
+	# 	print("FoldPos: " + str(posCount) + ", FoldNeg: " + str(negCount))
 
+
+	# generate txt file for use in graphing answer to number 5
+	f = open("question5.csv", "w+")
+	f.write("numEpochs,Accuracy,set\n")
+	
+	epochList = [1,10,100,1000]
+	for epoch in epochList:
+		testAccs = []
+		trainAccs = []
+		for j in range(len(folds)):
+			testFold = j
+			trainSet = []
+			for i in range(len(folds)):
+				if i != testFold:
+					trainSet.extend(folds[i])
+
+			nnet = Perceptron(trainSet, dset.attributes, dset.labels, l, epoch, .1)
+
+			# classify the test instances
+			testCountCorrect = 0
+			for inst in folds[testFold]:
+				out = nnet.calculateOutput(inst)
+				ind = 1 if out > .5 else 0
+				if inst[-1] == dset.labels[ind]:
+					testCountCorrect += 1
+			testAcc = testCountCorrect / float(len(folds[testFold]))
+			testAccs.append(testAcc)
+
+			# classify the training instances
+			trainCountCorrect = 0
+			for inst in trainSet:
+				out = nnet.calculateOutput(inst)
+				ind = 1 if out > .5 else 0
+				if inst[-1] == dset.labels[ind]:
+					trainCountCorrect += 1
+			trainAcc = trainCountCorrect / float(len(trainSet))
+			trainAccs.append(trainAcc)
+
+		# get the average accuracy across folds for  
+		trainAcc = sum(trainAccs) / len(trainAccs)
+		testAcc = sum(testAccs) / len(testAccs)
+		f.write(str(epoch) +','+ str(trainAcc) +',train\n')
+		f.write(str(epoch) +','+ str(testAcc)  +',test\n')
 
 
 
